@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Wrapper script for running leqm-nrt inside Docker as if it were a local CLI tool
+
+IMAGE_NAME="brightfishbe/leqm-nrt:latest"
+
+# Build the image if it doesn’t exist yet
+if ! docker image inspect "$IMAGE_NAME" > /dev/null 2>&1; then
+  echo "Docker image $IMAGE_NAME not found. Building it..."
+  docker build -t "$IMAGE_NAME" .
+fi
+
+last_arg=${@: -1}
+
+if [ -f ${last_arg} ]; then
+  dir="$(dirname ${last_arg})"
+  file="$(basename ${last_arg})"
+  args="/workdir/${file}"
+else
+  dir="$(pwd)"
+  args="$@"
+fi
+
+
+# Run leqm-nrt inside a container, passing through args and mounting current dir
+docker run --rm -it \
+  -v "${dir}":/workdir \
+  -w /workdir \
+  "$IMAGE_NAME" "${args}"
+
