@@ -22,7 +22,7 @@ fi
 
 
 # Run leqm-nrt inside a container, passing through args and mounting current dir
-docker run --rm -it \
+docker run --rm \
   -v "${dir}":/workdir \
   -w /workdir \
   "$IMAGE_NAME" "${args}"
